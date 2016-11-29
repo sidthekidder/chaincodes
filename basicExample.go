@@ -62,13 +62,13 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 
   // get the original values
   XBalanceStr, err := stub.GetState(X)
-  XBalance = strconv.Atoi(XBalanceStr)
+  XBalance = strconv.Atoi(string(XBalanceStr))
   if err != nil {
   	return nil, errors.New("Error: Failed to get state for X")
   }
 
   YBalanceStr, err := stub.GetState(Y)
-  YBalance = strconv.Atoi(YBalanceStr)
+  YBalance = strconv.Atoi(string(YBalanceStr))
   if err != nil {
 	return nil, errors.New("Error: Failed to get state for Y")
   }
@@ -97,13 +97,13 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
   
 	XBalanceStr, err := stub.GetState(X)
-	XBalance = strconv.Atoi(XBalanceStr)
+	XBalance = strconv.Atoi(string(XBalanceStr))
 	if err != nil {
 		return nil, errors.New("Error: Failed to get state for X")
 	}
   
 	YBalanceStr, err := stub.GetState(Y)
-	YBalance = strconv.Atoi(YBalanceStr)
+	YBalance = strconv.Atoi(string(YBalanceStr))
 	if err != nil {
 		return nil, errors.New("Error: Failed to get state for Y")
 	}
