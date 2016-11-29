@@ -57,15 +57,37 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
   // Transaction makes payment of transfer units from X to Y
   var err error
 
+  // get the amount to be transferred
   transfer, err = strconv.Atoi(args[0])
+
+  // get the original values
+  XBalanceStr, err := stub.GetState(X)
+  XBalance = strconv.Atoi(XBalanceStr)
+  if err != nil {
+  	return nil, errors.New("Error: Failed to get state for X")
+  }
+
+  YBalanceStr, err := stub.GetState(Y)
+  YBalance = strconv.Atoi(YBalanceStr)
+  if err != nil {
+	return nil, errors.New("Error: Failed to get state for Y")
+  }
+
+  // do the transfer
   XBalance = XBalance - transfer
   YBalance = YBalance + transfer
 
-  ts, err2 := stub.GetTxTimestamp()
-  if err2 != nil {
-    fmt.Printf("Error getting transaction timestamp: %s", err2)
+  // write back the updated values to the ledger
+  err = stub.PutState(X, []byte(strconv.Itoa(XBalance)))
+  if err != nil {
+    return nil, err
   }
-  ret := fmt.Sprintf("Invoke. Transaction Time: %v, Balance in X = %d, balance in Y = %d\n", ts, XBalance, YBalance)
+  err = stub.PutState(Y, []byte(strconv.Itoa(YBalance)))
+  if err != nil {
+    return nil, err
+  }
+
+  ret := fmt.Sprintf("Invoke. Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
   retbyte := []byte(ret)
 
   return retbyte, err
@@ -74,12 +96,14 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
 // Query callback representing the query of a chaincode
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
   
-	XBalance, err := stub.GetState(X)									//get the var from chaincode ledger
+	XBalanceStr, err := stub.GetState(X)
+	XBalance = strconv.Atoi(XBalanceStr)
 	if err != nil {
 		return nil, errors.New("Error: Failed to get state for X")
 	}
   
-	YBalance, err := stub.GetState(Y)									//get the var from chaincode ledger
+	YBalanceStr, err := stub.GetState(Y)
+	YBalance = strconv.Atoi(YBalanceStr)
 	if err != nil {
 		return nil, errors.New("Error: Failed to get state for Y")
 	}
