@@ -17,7 +17,7 @@ var X, Y string
 var XBalance, YBalance, transfer int
 
 // init callback representing the invocation of a chaincode
-func (t *SimpleChaincode) Init(stub *shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) Init(stub *shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
   var err error
 
   _, args := stub.GetFunctionAndParameters()
@@ -52,7 +52,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStubInterface) ([]byte, error
   return nil, nil
 }
 
-func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
   _, args := stub.GetFunctionAndParameters()
 
   // Transaction makes payment of transfer units from X to Y
@@ -71,7 +71,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStubInterface) ([]byte, err
 }
 
 // Query callback representing the query of a chaincode
-func (t *SimpleChaincode) Query(stub *shim.ChaincodeStubInterface) ([]byte, error) {
+func (t *SimpleChaincode) Query(stub *shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
   return nil, nil
 }
 
