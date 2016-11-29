@@ -35,7 +35,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
   if err != nil {
     return nil, errors.New("Expecting integer value for asset holding")
   }
-  fmt.Printf("Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
+  ret :=  fmt.Sprintf("Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
 
   // Write the state to the ledger
   err = stub.PutState(X, []byte(strconv.Itoa(XBalance)))
@@ -48,7 +48,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
     return nil, err
   }
 
-  return nil, nil
+  return ret, nil
 }
 
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
@@ -64,13 +64,25 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
   if err2 != nil {
     fmt.Printf("Error getting transaction timestamp: %s", err2)
   }
-  fmt.Printf("Transaction Time: %v, Balance in X = %d, balance in Y = %d\n", ts, XBalance, YBalance)
-  return nil, err
+  ret := fmt.Sprintf("Transaction Time: %v, Balance in X = %d, balance in Y = %d\n", ts, XBalance, YBalance)
+  return ret, err
 }
 
 // Query callback representing the query of a chaincode
 func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-  return nil, nil
+  
+	XBalance, err := stub.GetState(X)									//get the var from chaincode ledger
+	if err != nil {
+		return nil, errors.New("Error: Failed to get state for X")
+	}
+  
+	YBalance, err := stub.GetState(Y)									//get the var from chaincode ledger
+	if err != nil {
+		return nil, errors.New("Error: Failed to get state for Y")
+	}
+
+  ret := fmt.Sprintf("Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
+  return ret, nil
 }
 
 func main() {
