@@ -39,12 +39,12 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface) ([]byte, error)
   fmt.Printf("Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
 
   // Write the state to the ledger
-  err = stub.PutState(X, []byte(strconv.Itoa(XBalance))
+  err = stub.PutState(X, []byte(strconv.Itoa(XBalance)))
   if err != nil {
     return nil, err
   }
 
-  err = stub.PutState(Y, []byte(strconv.Itoa(YBalance))
+  err = stub.PutState(Y, []byte(strconv.Itoa(YBalance)))
   if err != nil {
     return nil, err
   }
