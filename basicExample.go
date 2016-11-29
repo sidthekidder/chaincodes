@@ -48,7 +48,7 @@ func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args [
     return nil, err
   }
 
-  return ret, nil
+  return ret[:], nil
 }
 
 func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
@@ -65,7 +65,7 @@ func (t *SimpleChaincode) Invoke(stub *shim.ChaincodeStub, function string, args
     fmt.Printf("Error getting transaction timestamp: %s", err2)
   }
   ret := fmt.Sprintf("Transaction Time: %v, Balance in X = %d, balance in Y = %d\n", ts, XBalance, YBalance)
-  return ret, err
+  return ret[:], err
 }
 
 // Query callback representing the query of a chaincode
@@ -82,7 +82,7 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 	}
 
   ret := fmt.Sprintf("Balance in X = %d, balance in Y = %d\n", XBalance, YBalance)
-  return ret, nil
+  return ret[:], nil
 }
 
 func main() {
