@@ -5,7 +5,7 @@ package main
 import (
   "errors"
   "fmt"
-  "strconv"
+  "encoding/base64"
 
   "github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -68,8 +68,6 @@ type AssetManagementChaincode struct {
 // Init method will be called during deployment.
 // The deploy transaction metadata is supposed to contain the administrator cert
 func (t *AssetManagementChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-  var err error
-
   if len(args) != 0 {
     return nil, errors.New("Incorrect number of arguments. Expecting 0")
   }
@@ -234,11 +232,9 @@ func (t *AssetManagementChaincode) isCaller(stub *shim.ChaincodeStub, certificat
     append(payload, binding...),
   )
   if err != nil {
-    myLogger.Errorf("Failed checking signature [%s]", err)
     return ok, err
   }
   if !ok {
-    myLogger.Error("Invalid signature")
   }
 
   return ok, err
@@ -252,7 +248,7 @@ func (t *AssetManagementChaincode) Invoke(stub *shim.ChaincodeStub, function str
 
   if function == "create" {
     // create asset
-    return t.assign(stub, args)
+    return t.create(stub, args)
   } else if function == "update" {
     // update asset (transfer ownership etc)
     return t.update(stub, args)
@@ -264,7 +260,6 @@ func (t *AssetManagementChaincode) Invoke(stub *shim.ChaincodeStub, function str
 // "query(asset)": returns the owner of the asset.
 // Anyone can invoke this function.
 func (t *AssetManagementChaincode) Query(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-  var err error
 
   if len(args) != 1 {
     return nil, errors.New("Incorrect number of arguments. Expecting name of an asset to query")
@@ -279,7 +274,7 @@ func (t *AssetManagementChaincode) Query(stub *shim.ChaincodeStub, function stri
 
   row, err := stub.GetRow("AssetsOwnership", columns)
   if err != nil {
-    return nil, fmt.Errorf("Failed retrieving asset [%s]: [%s]", string(asset), err)
+    return nil, errors.New("Failed retrieving asset.")
   }
 
   return row.Columns[1].GetBytes(), nil
